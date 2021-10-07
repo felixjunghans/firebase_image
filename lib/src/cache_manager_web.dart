@@ -9,7 +9,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 
 FirebaseImageCacheManager getFirebaseImageCacheManager(
         CacheRefreshStrategy cacheRefreshStrategy) =>
-    FirebaseImageCacheManager();
+    FirebaseImageCacheManager(cacheRefreshStrategy);
 
 class FirebaseImageCacheManager implements ficmi.FirebaseImageCacheManager {
   static const String key = 'firebase_image';
@@ -17,7 +17,7 @@ class FirebaseImageCacheManager implements ficmi.FirebaseImageCacheManager {
   final CacheRefreshStrategy cacheRefreshStrategy = CacheRefreshStrategy.NEVER;
 
   /// Cache currently not supported on Web
-  FirebaseImageCacheManager();
+  FirebaseImageCacheManager(CacheRefreshStrategy cacheRefreshStrategy);
 
   Future<void> open() async {}
 
