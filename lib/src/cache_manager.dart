@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_image/firebase_image.dart';
+import 'package:firebase_image/src/cache_manager_interface.dart' as ficmi;
 import 'package:firebase_image/src/firebase_image.dart';
 import 'package:firebase_image/src/image_object.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -10,7 +11,11 @@ import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 
-class FirebaseImageCacheManager {
+FirebaseImageCacheManager getFirebaseImageCacheManager(
+        CacheRefreshStrategy cacheRefreshStrategy) =>
+    FirebaseImageCacheManager(cacheRefreshStrategy);
+
+class FirebaseImageCacheManager implements ficmi.FirebaseImageCacheManager {
   static const String key = 'firebase_image';
 
   late Database db;

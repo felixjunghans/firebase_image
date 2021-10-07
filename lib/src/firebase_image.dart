@@ -3,7 +3,9 @@ import 'dart:ui';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_image/firebase_image.dart';
-import 'package:firebase_image/src/cache_manager.dart';
+import 'package:firebase_image/src/cache_manager_interface.dart'
+    if (dart.library.html) 'package:firebase_image/src/cache_manager_web.dart'
+    if (dart.library.io) 'package:firebase_image/src/cache_manager.dart';
 import 'package:firebase_image/src/image_object.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
@@ -38,7 +40,7 @@ class FirebaseImage extends ImageProvider<FirebaseImage> {
   /// [firebaseApp] Default: the default Firebase app. Specifies a custom Firebase app to make the request to the bucket from (optional)
   FirebaseImage(
     String location, {
-    this.shouldCache = true,
+    this.shouldCache = !kIsWeb,
     this.scale = 1.0,
     this.maxSizeBytes = 2500 * 1000, // 2.5MB
     this.cacheRefreshStrategy = CacheRefreshStrategy.BY_METADATA_DATE,
@@ -76,7 +78,7 @@ class FirebaseImage extends ImageProvider<FirebaseImage> {
       cacheRefreshStrategy,
     );
 
-    if (shouldCache) {
+    if (shouldCache && !kIsWeb) {
       await cacheManager.open();
       FirebaseImageObject? localObject =
           await cacheManager.get(_imageObject.uri, this);
