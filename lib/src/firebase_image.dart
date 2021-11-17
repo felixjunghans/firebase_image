@@ -11,6 +11,8 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
+enum FirebaseImageType { thumb, highRes, original }
+
 class FirebaseImage extends ImageProvider<FirebaseImage> {
   // Default: True. Specified whether or not an image should be cached (optional)
   final bool shouldCache;
@@ -30,6 +32,10 @@ class FirebaseImage extends ImageProvider<FirebaseImage> {
   /// The model for the image object
   final FirebaseImageObject _imageObject;
 
+  final FirebaseImageType firebaseImageType;
+
+  final Uint8List? placeholder;
+
   /// Fetches, saves and returns an ImageProvider for any image in a readable Firebase Cloud Storeage bucket.
   ///
   /// [location] The URI of the image, in the bucket, to be displayed
@@ -45,6 +51,8 @@ class FirebaseImage extends ImageProvider<FirebaseImage> {
     this.maxSizeBytes = 2500 * 1000, // 2.5MB
     this.cacheRefreshStrategy = CacheRefreshStrategy.BY_METADATA_DATE,
     this.firebaseApp,
+    this.firebaseImageType = FirebaseImageType.original,
+    this.placeholder,
   }) : _imageObject = FirebaseImageObject(
           bucket: _getBucket(location),
           remotePath: _getImagePath(location),
@@ -86,12 +94,20 @@ class FirebaseImage extends ImageProvider<FirebaseImage> {
       if (localObject != null) {
         bytes = await cacheManager.localFileBytes(localObject);
         if (bytes == null) {
-          bytes = await cacheManager.upsertRemoteFileToCache(
-              _imageObject, this.maxSizeBytes);
+          try {
+            bytes = await cacheManager.upsertRemoteFileToCache(
+                _imageObject, this.maxSizeBytes);
+          } catch (_) {
+            bytes = placeholder;
+          }
         }
       } else {
-        bytes = await cacheManager.upsertRemoteFileToCache(
-            _imageObject, this.maxSizeBytes);
+        try {
+          bytes = await cacheManager.upsertRemoteFileToCache(
+              _imageObject, this.maxSizeBytes);
+        } catch (_) {
+          bytes = placeholder;
+        }
       }
     } else {
       bytes =

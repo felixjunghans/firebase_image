@@ -65,7 +65,9 @@ class FirebaseImageCacheManager implements ficmi.FirebaseImageCacheManager {
   }
 
   Future<Uint8List?> upsertRemoteFileToCache(
-      FirebaseImageObject object, int maxSizeBytes) async {
+      FirebaseImageObject object, int maxSizeBytes,
+      {FirebaseImageType firebaseImageType =
+          FirebaseImageType.original}) async {
     if (CacheRefreshStrategy.BY_METADATA_DATE == this.cacheRefreshStrategy) {
       object.version = (await object.reference.getMetadata())
               .updated

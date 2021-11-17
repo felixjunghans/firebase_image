@@ -5,6 +5,7 @@ import 'package:firebase_image/firebase_image.dart';
 import 'package:firebase_image/src/cache_manager_interface.dart' as ficmi;
 import 'package:firebase_image/src/firebase_image.dart';
 import 'package:firebase_image/src/image_object.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
@@ -137,12 +138,35 @@ class FirebaseImageCacheManager implements ficmi.FirebaseImageCacheManager {
   }
 
   Future<Uint8List?> remoteFileBytes(
-      FirebaseImageObject object, int maxSizeBytes) {
-    return object.reference.getData(maxSizeBytes);
+      FirebaseImageObject object, int maxSizeBytes,
+      {FirebaseImageType firebaseImageType = FirebaseImageType.original}) {
+    var reference;
+
+    switch (firebaseImageType) {
+      case FirebaseImageType.thumb:
+        final path = object.remotePath
+            .replaceAll('.jpg', '_200x200.jpg')
+            .replaceAll('.png', '_200x200.jpg');
+        reference = FirebaseStorage.instance.ref(path);
+        break;
+      case FirebaseImageType.highRes:
+        final path = object.remotePath
+            .replaceAll('.jpg', '_800x800.jpg')
+            .replaceAll('.png', '_800x800.jpg');
+        reference = FirebaseStorage.instance.ref(path);
+        break;
+      case FirebaseImageType.original:
+        reference = object.reference;
+        break;
+    }
+
+    return reference.getData(maxSizeBytes);
   }
 
   Future<Uint8List?> upsertRemoteFileToCache(
-      FirebaseImageObject object, int maxSizeBytes) async {
+      FirebaseImageObject object, int maxSizeBytes,
+      {FirebaseImageType firebaseImageType =
+          FirebaseImageType.original}) async {
     if (CacheRefreshStrategy.BY_METADATA_DATE == this.cacheRefreshStrategy) {
       object.version = (await object.reference.getMetadata())
               .updated
