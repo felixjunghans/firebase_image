@@ -28,5 +28,7 @@ abstract class FirebaseImageCacheManager {
   Future<Uint8List?> upsertRemoteFileToCache(
       FirebaseImageObject object, int maxSizeBytes);
 
+  Future<FirebaseImageObject> putFile(FirebaseImageObject object, final bytes);
+
   Future<void> close();
 }

@@ -77,4 +77,9 @@ class FirebaseImageCacheManager implements ficmi.FirebaseImageCacheManager {
   }
 
   Future<void> close() async {}
+
+  @override
+  Future<FirebaseImageObject> putFile(FirebaseImageObject object, bytes) {
+    throw UnimplementedError();
+  }
 }
