@@ -96,7 +96,8 @@ class FirebaseImage extends ImageProvider<FirebaseImage> {
         if (bytes == null) {
           try {
             bytes = await cacheManager.upsertRemoteFileToCache(
-                _imageObject, this.maxSizeBytes);
+                _imageObject, this.maxSizeBytes,
+                firebaseImageType: firebaseImageType);
           } catch (_) {
             bytes = placeholder ?? _placeholder;
           }
@@ -104,7 +105,8 @@ class FirebaseImage extends ImageProvider<FirebaseImage> {
       } else {
         try {
           bytes = await cacheManager.upsertRemoteFileToCache(
-              _imageObject, this.maxSizeBytes);
+              _imageObject, this.maxSizeBytes,
+              firebaseImageType: firebaseImageType);
         } catch (_) {
           bytes = placeholder ?? _placeholder;
         }

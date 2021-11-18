@@ -173,7 +173,8 @@ class FirebaseImageCacheManager implements ficmi.FirebaseImageCacheManager {
               ?.millisecondsSinceEpoch ??
           0;
     }
-    Uint8List? bytes = await remoteFileBytes(object, maxSizeBytes);
+    Uint8List? bytes = await remoteFileBytes(object, maxSizeBytes,
+        firebaseImageType: firebaseImageType);
     await putFile(object, bytes);
     return bytes;
   }
