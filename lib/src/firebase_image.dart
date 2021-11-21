@@ -91,6 +91,10 @@ class FirebaseImage extends ImageProvider<FirebaseImage> {
       FirebaseImageObject? localObject =
           await cacheManager.get(_imageObject.uri, this);
 
+      if (localObject == null) {
+        localObject = await cacheManager.get(_getUri(), this);
+      }
+
       if (localObject != null) {
         bytes = await cacheManager.localFileBytes(localObject);
         if (bytes == null) {
@@ -135,6 +139,21 @@ class FirebaseImage extends ImageProvider<FirebaseImage> {
       codec: key._fetchImageCodec(),
       scale: key.scale,
     );
+  }
+
+  String _getUri() {
+    switch (firebaseImageType) {
+      case FirebaseImageType.thumb:
+        return _imageObject.uri
+            .replaceAll('.jpg', '_200x200.jpg')
+            .replaceAll('.png', '_200x200.jpg');
+      case FirebaseImageType.highRes:
+        return _imageObject.uri
+            .replaceAll('.jpg', '_800x800.jpg')
+            .replaceAll('.png', '_800x800.jpg');
+      case FirebaseImageType.original:
+        return _imageObject.uri;
+    }
   }
 
   static Uint8List _placeholder = Uint8List.fromList([

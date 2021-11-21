@@ -175,18 +175,33 @@ class FirebaseImageCacheManager implements ficmi.FirebaseImageCacheManager {
     }
     Uint8List? bytes = await remoteFileBytes(object, maxSizeBytes,
         firebaseImageType: firebaseImageType);
-    await putFile(object, bytes);
+    await putFile(object, bytes, firebaseImageType: firebaseImageType);
     return bytes;
   }
 
-  Future<FirebaseImageObject> putFile(
-      FirebaseImageObject object, final bytes) async {
+  Future<FirebaseImageObject> putFile(FirebaseImageObject object, final bytes,
+      {FirebaseImageType firebaseImageType =
+          FirebaseImageType.original}) async {
     String path = basePath + "/" + object.remotePath;
     path = path.replaceAll("//", "/");
     //print(join(basePath, object.remotePath)); Join isn't working?
     final localFile = await File(path).create(recursive: true);
     await localFile.writeAsBytes(bytes);
     object.localPath = localFile.path;
+    switch (firebaseImageType) {
+      case FirebaseImageType.thumb:
+        object.remotePath = object.remotePath
+            .replaceAll('.jpg', '_200x200.jpg')
+            .replaceAll('.png', '_200x200.jpg');
+        break;
+      case FirebaseImageType.highRes:
+        object.remotePath = object.remotePath
+            .replaceAll('.jpg', '_800x800.jpg')
+            .replaceAll('.png', '_800x800.jpg');
+        break;
+      case FirebaseImageType.original:
+        break;
+    }
     return await upsert(object);
   }
 

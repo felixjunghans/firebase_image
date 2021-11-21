@@ -5,7 +5,7 @@ class FirebaseImageObject {
   int version;
   final Reference reference;
   String? localPath;
-  final String remotePath;
+  String remotePath;
   final String bucket;
   final String uri;
 
