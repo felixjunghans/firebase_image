@@ -48,7 +48,7 @@ class FirebaseImage extends ImageProvider<FirebaseImage> {
     String location, {
     this.shouldCache = !kIsWeb,
     this.scale = 1.0,
-    this.maxSizeBytes = 2500 * 1000, // 2.5MB
+    this.maxSizeBytes = 5000 * 1000, // 5.0MB
     this.cacheRefreshStrategy = CacheRefreshStrategy.BY_METADATA_DATE,
     this.firebaseApp,
     this.firebaseImageType = FirebaseImageType.original,
