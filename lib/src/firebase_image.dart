@@ -16926,11 +16926,13 @@ class FirebaseImage extends ImageProvider<FirebaseImage> {
     if (other.runtimeType != runtimeType) return false;
     final FirebaseImage typedOther = other;
     return _imageObject.uri == typedOther._imageObject.uri &&
+        firebaseImageType == typedOther.firebaseImageType &&
         this.scale == typedOther.scale;
   }
 
   @override
-  int get hashCode => hashValues(_imageObject.uri, this.scale);
+  int get hashCode =>
+      hashValues(_imageObject.uri, this.scale, firebaseImageType);
 
   @override
   String toString() =>
