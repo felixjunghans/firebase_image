@@ -54,9 +54,10 @@ class FirebaseImage extends ImageProvider<FirebaseImage> {
     this.firebaseImageType = FirebaseImageType.original,
     this.placeholder,
   }) : _imageObject = FirebaseImageObject(
-          bucket: _getBucket(location),
-          remotePath: _getImagePath(location),
-          reference: _getImageRef(location, firebaseApp),
+          bucket: _getBucket(_getLocation(location, firebaseImageType)),
+          remotePath: _getImagePath(_getLocation(location, firebaseImageType)),
+          reference: _getImageRef(
+              _getLocation(location, firebaseImageType), firebaseApp),
         );
 
   /// Returns the image as bytes
@@ -89,10 +90,10 @@ class FirebaseImage extends ImageProvider<FirebaseImage> {
     if (shouldCache && !kIsWeb) {
       await cacheManager.open();
       FirebaseImageObject? localObject =
-          await cacheManager.get(_imageObject.uri, this);
+          await cacheManager.get(_imageObject.originalUri, this);
 
       if (localObject == null) {
-        localObject = await cacheManager.get(_getUri(), this);
+        localObject = await cacheManager.get(_imageObject.uri, this);
       }
 
       if (localObject != null) {
@@ -141,18 +142,19 @@ class FirebaseImage extends ImageProvider<FirebaseImage> {
     );
   }
 
-  String _getUri() {
+  static String _getLocation(
+      String location, FirebaseImageType firebaseImageType) {
     switch (firebaseImageType) {
       case FirebaseImageType.thumb:
-        return _imageObject.uri
+        return location
             .replaceAll('.jpg', '_200x200.jpg')
             .replaceAll('.png', '_200x200.jpg');
       case FirebaseImageType.highRes:
-        return _imageObject.uri
+        return location
             .replaceAll('.jpg', '_800x800.jpg')
             .replaceAll('.png', '_800x800.jpg');
       case FirebaseImageType.original:
-        return _imageObject.uri;
+        return location;
     }
   }
 

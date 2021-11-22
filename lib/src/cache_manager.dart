@@ -5,7 +5,6 @@ import 'package:firebase_image/firebase_image.dart';
 import 'package:firebase_image/src/cache_manager_interface.dart' as ficmi;
 import 'package:firebase_image/src/firebase_image.dart';
 import 'package:firebase_image/src/image_object.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
@@ -140,27 +139,7 @@ class FirebaseImageCacheManager implements ficmi.FirebaseImageCacheManager {
   Future<Uint8List?> remoteFileBytes(
       FirebaseImageObject object, int maxSizeBytes,
       {FirebaseImageType firebaseImageType = FirebaseImageType.original}) {
-    var reference;
-
-    switch (firebaseImageType) {
-      case FirebaseImageType.thumb:
-        final path = object.remotePath
-            .replaceAll('.jpg', '_200x200.jpg')
-            .replaceAll('.png', '_200x200.jpg');
-        reference = FirebaseStorage.instance.ref(path);
-        break;
-      case FirebaseImageType.highRes:
-        final path = object.remotePath
-            .replaceAll('.jpg', '_800x800.jpg')
-            .replaceAll('.png', '_800x800.jpg');
-        reference = FirebaseStorage.instance.ref(path);
-        break;
-      case FirebaseImageType.original:
-        reference = object.reference;
-        break;
-    }
-
-    return reference.getData(maxSizeBytes);
+    return object.reference.getData(maxSizeBytes);
   }
 
   Future<Uint8List?> upsertRemoteFileToCache(
@@ -188,20 +167,6 @@ class FirebaseImageCacheManager implements ficmi.FirebaseImageCacheManager {
     final localFile = await File(path).create(recursive: true);
     await localFile.writeAsBytes(bytes);
     object.localPath = localFile.path;
-    switch (firebaseImageType) {
-      case FirebaseImageType.thumb:
-        object.remotePath = object.remotePath
-            .replaceAll('.jpg', '_200x200.jpg')
-            .replaceAll('.png', '_200x200.jpg');
-        break;
-      case FirebaseImageType.highRes:
-        object.remotePath = object.remotePath
-            .replaceAll('.jpg', '_800x800.jpg')
-            .replaceAll('.png', '_800x800.jpg');
-        break;
-      case FirebaseImageType.original:
-        break;
-    }
     return await upsert(object);
   }
 

@@ -8,6 +8,7 @@ class FirebaseImageObject {
   String remotePath;
   final String bucket;
   final String uri;
+  final String originalUri;
 
   FirebaseImageObject({
     this.version = -1,
@@ -15,7 +16,9 @@ class FirebaseImageObject {
     this.localPath,
     required this.bucket,
     required this.remotePath,
-  }) : uri = '$bucket$remotePath';
+  })  : uri = '$bucket$remotePath',
+        originalUri =
+            '$bucket${remotePath.replaceAll('_200x200', '').replaceAll('_800x800', '')}';
 
   Map<String, dynamic> toMap() {
     return {
